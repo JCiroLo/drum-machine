@@ -1,0 +1,10 @@
+.input-container(
+  :class="[{ disabled, active: model || model === 0 }]"
+)
+  .input-wrapper
+    input.input-element(
+      v-model="model"
+      :placeholder="label"
+      type="number"
+      :disabled="disabled"
+    )

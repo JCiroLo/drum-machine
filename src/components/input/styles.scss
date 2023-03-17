@@ -1,0 +1,44 @@
+.input-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  &.disabled {
+    cursor: not-allowed;
+    user-select: none;
+    color: #999;
+
+    .input-wrapper {
+      border: 1px solid #999;
+    }
+
+    .input-prefix,
+    .input-sufix,
+    .helper-text {
+      color: #999;
+    }
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+
+    .input-element {
+      all: unset;
+      width: 100%;
+      padding: 0 $unit;
+      border-bottom: 2px solid $color_4;
+      color: white;
+
+      &[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+}
