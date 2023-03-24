@@ -1,12 +1,20 @@
-.drum-machine
-  .bpm-counter
-    button(): v-icon(name="plus")
-    v-input.bpm-input(v-model="settings.bpm" @change="test")
-    button(): v-icon(name="minus")
-  .power-button
-    button(@click="power"): v-icon(name="power-off")
-  .drum-pad
-    button.drum-hats(:class="{ active: drums.hat.isPlaying()}" @click="drums.hat.mute"): img(src="https://cdn-icons-png.flaticon.com/512/1755/1755695.png" alt="hats")
-    button.drum-kick(:class="{ active: drums.kick.isPlaying()}" @click="drums.kick.mute"): img(src="https://cdn-icons-png.flaticon.com/512/4379/4379409.png" alt="kick")
-    button.drum-clank(:class="{ active: drums.clank.isPlaying()}" @click="drums.clank.mute"): img(src="https://cdn-icons-png.flaticon.com/512/2741/2741297.png" alt="clank")
-    button.drum-snare(:class="{ active: drums.snare.isPlaying()}" @click="drums.snare.mute"): img(src="https://cdn-icons-png.flaticon.com/512/4956/4956275.png" alt="snare")
+.app-content
+  .drum-machine(:class="{active: sequencer}")
+    transition(name="fade" mode="out-in")
+      .power-off(v-if="!sequencer")
+        .power-button
+          button(@click="power"): v-icon(name="power-off")
+          .circles-wrapper
+            .circle(v-for="circle in 5" :key="circle" :class="`circle-${circle}`")
+      .power-on(v-else)
+        .bpm-input
+          button(): v-icon(name="plus")
+          input(v-model="settings.bpm" @change="test")
+          button(): v-icon(name="minus")
+        .play-button
+          button(:class="{playing: sequencer.isPlaying()}" @click="play")
+            transition(name="scale" mode="out-in")
+              v-icon(v-if="sequencer.isPlaying()" name="pause")
+              v-icon(v-else name="play")
+        .drum-pad
+          button(v-for="(sample, index) in sequencer.getSamples()" :key="index" :class="{active: !sample.isMuted}" @click="sample.isMuted = !sample.isMuted"): v-icon(name="circle")

@@ -1,100 +1,208 @@
-.drum-machine {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100vh;
-  padding: $unit * 2;
-  background-color: #131417;
+.app-content {
+  height: 100vh;
+  overflow: hidden;
 
-  .bpm-counter {
+  .drum-machine {
     display: flex;
-    text-align: center;
-    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: $unit * 2;
+    transition: background-color 0.75s;
+
+    &.active {
+      background-color: #130f15;
+    }
 
     .bpm-input {
-      width: $unit * 8;
-    }
-
-    button {
-      all: unset;
-      padding: 0 $unit;
-      cursor: pointer;
-      color: white;
-      background-color: $color_4;
-
-      &:first-child {
-        border-radius: 50px 0 0 50px;
-      }
-
-      &:last-child {
-        border-radius: 0 50px 50px 0;
-      }
-    }
-  }
-
-  .power-button {
-    position: relative;
-
-    button {
-      all: unset;
-      padding: $unit * 2;
-      font-size: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      background-color: #1e1f26;
-      color: #131417;
-      transition: color $transition-duration, scale calc($transition-duration * 0.5);
-
-      &:hover {
-        color: $color_4;
-      }
-
-      &:active {
-        scale: 0.9;
-      }
-    }
-  }
-
-  .drum-pad {
-    display: flex;
-    gap: $unit;
-
-    button {
-      all: unset;
-      position: relative;
-      z-index: 5;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      width: $unit * 8;
-      height: $unit * 8;
-      background-color: #1e1f26;
-      border-radius: $unit;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color $transition-duration;
+      gap: $unit;
+      text-align: center;
+      font-weight: 700;
 
-      &:hover {
-        border-color: $color_4;
-      }
-
-      &::before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        left: 0;
-        top: $unit;
-        width: 100%;
-        height: 100%;
+      button {
+        all: unset;
+        padding: $unit;
         border-radius: $unit;
-        background-color: red;
+        cursor: pointer;
+        color: white;
+        background-color: #1e1f26;
+        transition: background-color $transition-duration, color $transition-duration;
+
+        &:hover {
+          color: $color_4;
+        }
       }
 
-      img {
-        width: 32px;
-        filter: invert(1) contrast(1);
+      input {
+        all: unset;
+        padding: 0;
+        border-radius: $unit;
+        background-color: #1e1f26;
+        color: white;
+      }
+    }
+
+    .power-off {
+      .power-button {
+        position: relative;
+        $transition-duration: 0.2s;
+
+        &:hover {
+          .circles-wrapper {
+            @for $i from 1 through 5 {
+              .circle-#{$i} {
+                $transition-delay: calc(map($i, 1, 5, 0, 0.25) * 1s);
+
+                filter: blur($unit);
+                opacity: calc(map($i, 1, 5, 0, 0.2));
+                transform: translate(-50%, -50%) scale($i * 2);
+                transition: transform $transition-duration $transition-delay,
+                  opacity $transition-duration $transition-delay, filter $transition-duration $transition-delay;
+              }
+            }
+          }
+        }
+
+        button {
+          all: unset;
+          position: relative;
+          z-index: 10;
+          padding: $unit * 3;
+          font-size: $unit * 6;
+          border-radius: 50%;
+          cursor: pointer;
+          background-color: #1e1f26;
+          color: #131417;
+          border: 4px solid transparent;
+          transition: color $transition-duration, scale calc($transition-duration * 0.5),
+            border-color $transition-duration;
+
+          &:hover {
+            color: $color_4;
+            border-color: $color_4;
+          }
+
+          &:active {
+            scale: 0.9;
+          }
+        }
+
+        .circles-wrapper {
+          pointer-events: none;
+
+          .circle {
+            position: absolute;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+          }
+
+          @for $i from 1 through 5 {
+            .circle-#{$i} {
+              z-index: calc($i);
+              background-color: $color_4;
+              opacity: 0;
+              transform: translate(-50%, -50%) scale(0);
+              transition: transform $transition-duration, opacity $transition-duration, filter $transition-duration;
+            }
+          }
+        }
+      }
+    }
+
+    .power-on {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+
+      .play-button {
+        button {
+          all: unset;
+          position: relative;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: $unit * 8;
+          height: $unit * 8;
+          background-color: #1e1f26;
+          color: white;
+          border-radius: $unit;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: border-color 0.25s, transform 0.25s;
+
+          &:hover {
+            border-color: $color_4;
+          }
+
+          &.playing {
+            transform: rotate(90deg);
+
+            .icon-container {
+              transform: rotate(-90deg);
+            }
+          }
+        }
+      }
+
+      .drum-pad {
+        display: flex;
+        gap: $unit;
+
+        button {
+          all: unset;
+          position: relative;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: $unit * 8;
+          height: $unit * 8;
+          background-color: #1e1f26;
+          color: white;
+          border-radius: $unit;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: border-color 0.25s, background-color 0.25s;
+
+          &:hover {
+            border-color: $color_4;
+          }
+
+          &.active {
+            background-color: $color_4;
+          }
+        }
       }
     }
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.1s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.scale-enter-active,
+.scale-leave-active {
+  transition: opacity 0.1s, transform 0.1s;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
 }

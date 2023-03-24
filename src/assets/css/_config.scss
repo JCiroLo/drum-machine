@@ -5,3 +5,7 @@ $color_1: #5932e6;
 $color_2: #8632e6;
 $color_3: #b332e6;
 $color_4: #e032e6;
+
+@function map($value, $fromMin, $fromMax, $toMin, $toMax) {
+  @return ($toMax - $toMin) * ($value - $fromMin) / ($fromMax - $fromMin) + $toMin;
+}
