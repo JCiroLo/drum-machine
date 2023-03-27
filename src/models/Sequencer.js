@@ -1,11 +1,5 @@
 import * as Tone from 'tone'
-
-class Sample {
-  constructor (url) {
-    this.track = new Tone.Player(url).toDestination()
-    this.isMuted = false
-  }
-}
+import Sample from './Sample'
 
 export default class Sequencer {
   samples = {
@@ -15,7 +9,7 @@ export default class Sequencer {
     sfx4: new Sample(require('../assets/samples/drum_kick.wav'))
   }
 
-  constructor ({ bpm, bars }) {
+  constructor ({ bpm, bars, onBeat }) {
     this.bpm = bpm
     this.bars = bars
     this.status = 'off'
@@ -23,7 +17,7 @@ export default class Sequencer {
 
     Tone.start()
     Tone.getDestination().volume.rampTo(-10, 0.001)
-    this.loop()
+    this.loop(onBeat)
   }
 
   loadSamples () {
@@ -45,7 +39,7 @@ export default class Sequencer {
     }
   }
 
-  loop () {
+  loop (callback) {
     let beat = 0
 
     const repeat = time => {
@@ -54,6 +48,8 @@ export default class Sequencer {
           sample.track.start(time)
         }
       })
+
+      callback(beat)
 
       beat = (beat + 1) % (this.bars * 2)
     }
@@ -79,8 +75,6 @@ export default class Sequencer {
   getSamples () {
     return this.samples
   }
-
-  mute () {}
 
   isPlaying () {
     return this.status === 'on'

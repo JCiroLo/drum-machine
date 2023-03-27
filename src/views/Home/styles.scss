@@ -1,6 +1,26 @@
+$height-drum-machine: $unit * 40;
+
 .app-content {
   height: 100vh;
   overflow: hidden;
+  perspective: $unit * 50;
+
+  &.active {
+    .drum-machine {
+      transform: translateZ(-$height-drum-machine * 0.5) rotateZ(-0deg);
+      transition: transform 0.25s ease-out 0.5s;
+
+      .face-top {
+        .bpm-input {
+          input {
+            background-color: rgb(0, 64, 0);
+            text-shadow: 0px 0px 20px #ffff00cc;
+            color: #00ff77cc;
+          }
+        }
+      }
+    }
+  }
 
   .drum-machine {
     display: flex;
@@ -8,201 +28,209 @@
     justify-content: center;
     height: 100%;
     padding: $unit * 2;
-    transition: background-color 0.75s;
+    transform-style: preserve-3d;
+    transform: translateZ(-$height-drum-machine * 0.5) rotateX(-90deg);
+    transition: transform 0.25s ease-out;
 
-    &.active {
-      background-color: #130f15;
-    }
-
-    .bpm-input {
+    .face-top {
+      position: absolute;
       display: flex;
-      gap: $unit;
-      text-align: center;
-      font-weight: 700;
+      align-items: center;
+      justify-content: space-between;
+      width: $unit * 70;
+      height: $unit * 15;
+      padding: $unit * 4;
+      transform-style: preserve-3d;
+      transform: rotateX(90deg) translateZ($height-drum-machine * 0.5);
+      border-radius: $unit;
+      background-image: linear-gradient(to top, #171717 0%, #303032 100%);
+      box-shadow: inset 0 18px 4px -18px rgba(255, 255, 255, 0.4), 0 8px 8px 0 rgba(0, 0, 0, 0.3);
 
-      button {
-        all: unset;
-        padding: $unit;
-        border-radius: $unit;
-        cursor: pointer;
-        color: white;
-        background-color: #1e1f26;
-        transition: background-color $transition-duration, color $transition-duration;
+      .bpm-input {
+        display: flex;
+        align-items: center;
+        gap: $unit * 0.25;
+        height: max-content;
+        padding: $unit * 0.25;
+        background-color: black;
+        border-radius: $unit * 0.75;
+        font-weight: 700;
 
-        &:hover {
-          color: $color_4;
+        button {
+          height: 100%;
+
+          &.btn-minus {
+            border-radius: $unit * 0.5 0 0 $unit * 0.5;
+          }
+
+          &.btn-plus {
+            border-radius: 0 $unit * 0.5 $unit * 0.5 0;
+          }
+        }
+
+        input {
+          all: unset;
+          height: 30px;
+          font-family: "Digital-7 Mono", sans-serif;
+
+          background-color: rgb(128, 0, 0);
+          text-align: center;
+          line-height: $unit * 4;
+          letter-spacing: 4px;
+          font-size: 32px;
+          border-bottom: 2px solid #cfcfcf33;
+          box-shadow: 0px 0px 50px #000000ee inset;
+          text-shadow: 0px 0px 20px #ffff00cc;
+          color: #ff9999cc;
         }
       }
 
-      input {
-        all: unset;
-        padding: 0;
-        border-radius: $unit;
-        background-color: #1e1f26;
-        color: white;
-      }
-    }
-
-    .power-off {
       .power-button {
-        position: relative;
-        $transition-duration: 0.2s;
+        display: flex;
+        align-items: center;
+        padding: $unit * 0.25;
+        background-color: black;
+        border-radius: $unit * 0.75;
 
-        &:hover {
-          .circles-wrapper {
-            @for $i from 1 through 5 {
-              .circle-#{$i} {
-                $transition-delay: calc(map($i, 1, 5, 0, 0.25) * 1s);
+        .status {
+          width: $unit;
+          height: $unit;
+          margin: 0 $unit;
+          border-radius: 50%;
+          background-color: rgb(128, 0, 0);
+          box-shadow: 0px 0px 2px #000000ee inset, 0 0 $unit rgb(128, 0, 0);
+          transition: background-color 0.25s, box-shadow 0.25s;
 
-                filter: blur($unit);
-                opacity: calc(map($i, 1, 5, 0, 0.2));
-                transform: translate(-50%, -50%) scale($i * 2);
-                transition: transform $transition-duration $transition-delay,
-                  opacity $transition-duration $transition-delay, filter $transition-duration $transition-delay;
-              }
-            }
+          &.on {
+            background-color: rgb(0, 128, 0);
+            box-shadow: 0px 0px 2px #000000ee inset, 0 0 $unit rgb(0, 128, 0);
           }
         }
 
         button {
-          all: unset;
-          position: relative;
-          z-index: 10;
-          padding: $unit * 3;
-          font-size: $unit * 6;
-          border-radius: 50%;
-          cursor: pointer;
-          background-color: #1e1f26;
-          color: #131417;
-          border: 4px solid transparent;
-          transition: color $transition-duration, scale calc($transition-duration * 0.5),
-            border-color $transition-duration;
+          border-radius: $unit * 0.5;
 
-          &:hover {
-            color: $color_4;
-            border-color: $color_4;
-          }
-
-          &:active {
-            scale: 0.9;
-          }
-        }
-
-        .circles-wrapper {
-          pointer-events: none;
-
-          .circle {
-            position: absolute;
-            z-index: -1;
-            top: 50%;
-            left: 50%;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-          }
-
-          @for $i from 1 through 5 {
-            .circle-#{$i} {
-              z-index: calc($i);
-              background-color: $color_4;
-              opacity: 0;
-              transform: translate(-50%, -50%) scale(0);
-              transition: transform $transition-duration, opacity $transition-duration, filter $transition-duration;
-            }
+          svg {
+            width: 2em;
           }
         }
       }
     }
 
-    .power-on {
+    .face-front {
+      position: absolute;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      height: 100%;
+      gap: $unit * 4;
+      width: $unit * 70;
+      height: $height-drum-machine;
+      padding: $unit * 4;
+      border-radius: $unit;
+      background-image: linear-gradient(to top, #171717 0%, #303032 100%);
+      box-shadow: inset 0 18px 4px -18px rgba(255, 255, 255, 0.4), 0 8px 8px 0 rgba(0, 0, 0, 0.3);
+      transform: rotateY(0deg) translateZ($unit * 7.4);
 
-      .play-button {
-        button {
-          all: unset;
-          position: relative;
-          z-index: 5;
+      .old-lcd-screen {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: $unit;
+        border-radius: $unit;
+        user-select: none;
+        background-color: rgb(20, 20, 20);
+        box-shadow: 0px 0px 16px #000000ee inset;
+
+        .screen-progress-trail {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          width: $unit * 8;
-          height: $unit * 8;
-          background-color: #1e1f26;
-          color: white;
-          border-radius: $unit;
-          cursor: pointer;
-          border: 2px solid transparent;
-          transition: border-color 0.25s, transform 0.25s;
+          margin-top: $unit * 0.5;
+          width: 100%;
+          height: 4px;
+          background-color: #00000066;
+          border-radius: 2px;
 
-          &:hover {
-            border-color: $color_4;
+          .led {
+            width: calc(100% / 12);
+            height: 100%;
+            border-radius: 2px;
+            box-shadow: 0px 0px 2px #000000aa inset;
+
+            &.on {
+              background-color: #00ffffcc;
+              box-shadow: 0px 0px 2px #000000aa inset, 0 0 2px #00ffff66;
+            }
+          }
+        }
+
+        .led-row {
+          flex-grow: 1;
+          display: flex;
+
+          &.on {
+            .led {
+              &.on {
+                background-color: #00ffff33;
+                box-shadow: 0px 0px 50px #00ffff99;
+
+                .led-dot {
+                  background-color: #00ffffcc;
+                }
+              }
+
+              .led-dot {
+                background-color: #00000066;
+              }
+            }
           }
 
-          &.playing {
-            transform: rotate(90deg);
+          .led {
+            flex-grow: 1;
+            padding: 1px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            column-gap: 2px;
+            row-gap: 2px;
 
-            .icon-container {
-              transform: rotate(-90deg);
+            .led-dot {
+              border-radius: 1px;
+              box-shadow: 0px 0px 4px #000000aa inset;
             }
           }
         }
       }
 
-      .drum-pad {
+      .button-group {
         display: flex;
-        gap: $unit;
+        justify-content: space-between;
+        width: 100%;
 
-        button {
-          all: unset;
-          position: relative;
-          z-index: 5;
+        .play-buttons,
+        .sample-buttons {
           display: flex;
-          align-items: center;
-          justify-content: center;
-          width: $unit * 8;
-          height: $unit * 8;
-          background-color: #1e1f26;
-          color: white;
-          border-radius: $unit;
-          cursor: pointer;
-          border: 2px solid transparent;
-          transition: border-color 0.25s, background-color 0.25s;
+          gap: $unit * 0.25;
+          padding: $unit * 0.25;
+          background-color: black;
+          border-radius: $unit * 0.75;
 
-          &:hover {
-            border-color: $color_4;
-          }
+          button {
+            &:first-child {
+              border-radius: $unit * 0.5 0 0 $unit * 0.5;
+            }
 
-          &.active {
-            background-color: $color_4;
+            &:last-child {
+              border-radius: 0 $unit * 0.5 $unit * 0.5 0;
+            }
           }
         }
       }
     }
   }
-}
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.1s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.scale-enter-active,
-.scale-leave-active {
-  transition: opacity 0.1s, transform 0.1s;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.5);
+  .svg-filters {
+    height: 0;
+    width: 0;
+  }
 }

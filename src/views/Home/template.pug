@@ -1,20 +1,51 @@
-.app-content
-  .drum-machine(:class="{active: sequencer}")
-    transition(name="fade" mode="out-in")
-      .power-off(v-if="!sequencer")
-        .power-button
-          button(@click="power"): v-icon(name="power-off")
-          .circles-wrapper
-            .circle(v-for="circle in 5" :key="circle" :class="`circle-${circle}`")
-      .power-on(v-else)
-        .bpm-input
-          button(): v-icon(name="plus")
-          input(v-model="settings.bpm" @change="test")
-          button(): v-icon(name="minus")
-        .play-button
-          button(:class="{playing: sequencer.isPlaying()}" @click="play")
-            transition(name="scale" mode="out-in")
-              v-icon(v-if="sequencer.isPlaying()" name="pause")
-              v-icon(v-else name="play")
-        .drum-pad
-          button(v-for="(sample, index) in sequencer.getSamples()" :key="index" :class="{active: !sample.isMuted}" @click="sample.isMuted = !sample.isMuted"): v-icon(name="circle")
+.app-content(:class="{active: sequencer}")
+  .drum-machine
+    .face-top
+      .bpm-input
+        v-button.btn-minus(@click="lessBpm")
+          svg(xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 52.161 52.161"): g: path(d="M52.161,26.081c0,3.246-2.63,5.875-5.875,5.875H5.875C2.63,31.956,0,29.327,0,26.081l0,0c0-3.245,2.63-5.875,5.875-5.875 h40.411C49.531,20.206,52.161,22.835,52.161,26.081L52.161,26.081z")
+        input(v-model="settings.bpm" @change="test")
+        v-button.btn-plus(@click="moreBpm")
+          svg(xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 60.364 60.364"): g: path(d="M54.454,23.18l-18.609-0.002L35.844,5.91C35.845,2.646,33.198,0,29.934,0c-3.263,0-5.909,2.646-5.909,5.91v17.269 L5.91,23.178C2.646,23.179,0,25.825,0,29.088c0.002,3.264,2.646,5.909,5.91,5.909h18.115v19.457c0,3.267,2.646,5.91,5.91,5.91 c3.264,0,5.909-2.646,5.91-5.908V34.997h18.611c3.262,0,5.908-2.645,5.908-5.907C60.367,25.824,57.718,23.178,54.454,23.18z")
+      .power-button
+        .status(:class="{on: sequencer}")
+        v-button(@click="power")
+          svg(xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 65.599 65.599"): g
+            path(d="M32.8,28.625c3.174,0,5.746-2.573,5.746-5.746V5.746C38.546,2.573,35.974,0,32.8,0s-5.746,2.573-5.746,5.746v17.133 C27.054,26.052,29.626,28.625,32.8,28.625z")
+            path(d="M43.265,8.854v10.597c5.609,3.506,9.361,9.72,9.361,16.809c0,10.933-8.895,19.826-19.826,19.826 c-10.932,0-19.827-8.896-19.827-19.826c0-7.089,3.752-13.304,9.362-16.809V8.854C11.31,13.078,3.459,23.766,3.459,36.259 c0,16.178,13.162,29.34,29.341,29.34c16.178,0,29.34-13.162,29.34-29.34C62.14,23.767,54.288,13.078,43.265,8.854z")
+    .face-front
+      .old-lcd-screen
+        .led-row(v-for="(sample, _, index) in sequencer?.getSamples()" :key="index" :class="{on: !sample.isMuted}")
+          .led(v-for="led in settings.bars * 2" :key="led" :class="{on: sequencer?.isPlaying() ? sequence[index][led - 1] && led === currentBeat + 1 : sequence[index][led - 1]}")
+            .led-dot(v-for="dot in 12" :key="dot")
+        .screen-progress-trail
+          .led(v-for="led in settings.bars * 2" :key="led" :class="{on: led === currentBeat + 1}")
+      .button-group
+        .sample-buttons(v-if="sequencer")
+          v-button(v-for="(sample, _, index) in sequencer.getSamples()" :key="index" :active="!sample.isMuted" @click="sample.isMuted = !sample.isMuted")
+            svg(viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"): path(d="M12 18a6 6 0 100-12 6 6 0 000 12z")
+        .play-buttons
+          v-button(@click="eject")
+            svg(viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"): path(d="M 46.8790 32.5000 C 48.7307 32.5000 49.7852 31.5156 49.7852 29.8750 C 49.7852 29.1015 49.4104 28.2813 48.7542 27.5781 L 30.8477 7.8203 C 30.0509 6.9531 29.1368 6.3672 27.9650 6.3672 C 26.8399 6.3672 25.8790 7.0000 25.1056 7.8203 L 7.1759 27.5781 C 6.5196 28.2813 6.1446 29.1015 6.1681 29.8750 C 6.1915 31.5156 7.1993 32.5000 9.0743 32.5000 Z M 45.8477 37.7969 L 10.1524 37.7969 C 7.3165 37.7969 5.7228 39.2734 5.7228 42.0625 L 5.7228 45.3437 C 5.7228 48.1328 7.3165 49.6328 10.1524 49.6328 L 45.8477 49.6328 C 48.6601 49.6328 50.2772 48.1562 50.2772 45.3437 L 50.2772 42.0625 C 50.2772 39.2500 48.6601 37.7969 45.8477 37.7969 Z")
+          v-button(:active="sequencer?.isPlaying()" @click="play")
+            svg(viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"): path(d="M8.286 3.407A1.5 1.5 0 0 0 6 4.684v14.632a1.5 1.5 0 0 0 2.286 1.277l11.888-7.316a1.5 1.5 0 0 0 0-2.555L8.286 3.407z")
+          v-button(:active="!sequencer?.isPlaying()" @click="pause")
+            svg(viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"): path(fill-rule="evenodd" clip-rule="evenodd" d="M5.163 3.819C5 4.139 5 4.559 5 5.4v13.2c0 .84 0 1.26.163 1.581a1.5 1.5 0 0 0 .656.655c.32.164.74.164 1.581.164h.2c.84 0 1.26 0 1.581-.163a1.5 1.5 0 0 0 .656-.656c.163-.32.163-.74.163-1.581V5.4c0-.84 0-1.26-.163-1.581a1.5 1.5 0 0 0-.656-.656C8.861 3 8.441 3 7.6 3h-.2c-.84 0-1.26 0-1.581.163a1.5 1.5 0 0 0-.656.656zm9 0C14 4.139 14 4.559 14 5.4v13.2c0 .84 0 1.26.164 1.581a1.5 1.5 0 0 0 .655.655c.32.164.74.164 1.581.164h.2c.84 0 1.26 0 1.581-.163a1.5 1.5 0 0 0 .655-.656c.164-.32.164-.74.164-1.581V5.4c0-.84 0-1.26-.163-1.581a1.5 1.5 0 0 0-.656-.656C17.861 3 17.441 3 16.6 3h-.2c-.84 0-1.26 0-1.581.163a1.5 1.5 0 0 0-.655.656z")
+
+  <svg class="svg-filters">
+    <defs>
+      <radialGradient id="active" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#ebf7ff;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#b3e1ff;stop-opacity:1" />
+      </radialGradient>
+
+      <filter id="inset-shadow">
+        <feOffset dx='-1' dy='1'/>
+        <feGaussianBlur stdDeviation='.7' result='offset-blur'/>
+        <feComposite operator='out' in='SourceGraphic' in2='offset-blur' result='inverse'/>
+        <feFlood flood-color='black' flood-opacity='0.05' result='color'/>
+        <feComposite operator='in' in='color' in2='inverse' result='shadow'/>
+        <feComposite operator='over' in='shadow' in2='SourceGraphic'/>
+      </filter>
+    </defs>
+  </svg>

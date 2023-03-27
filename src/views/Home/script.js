@@ -6,35 +6,50 @@ export default {
     return {
       settings: {
         bpm: 180,
-        bars: 6,
-        volume: {
-          hat: 0.5,
-          kick: 0.5,
-          clank: 0.5,
-          snare: 0.5
-        }
+        bars: 6
       },
-      sequencer: null
+      sequencer: null,
+      sequence: [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+        [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+      ],
+      currentBeat: 0
     }
   },
   methods: {
+    lessBpm () {
+      this.settings.bpm -= 10
+    },
+    moreBpm () {
+      this.settings.bpm += 10
+    },
     power () {
       this.sequencer = new Sequencer({
         bpm: this.settings.bpm,
-        bars: this.settings.bars
+        bars: this.settings.bars,
+        onBeat: beat => {
+          this.currentBeat = beat
+        }
       })
     },
     play () {
-      if (this.sequencer.isPlaying()) {
-        this.sequencer.stop()
-      } else {
+      if (!this.sequencer.isPlaying()) {
         this.sequencer.play()
       }
     },
-    test (a) {
-      a.mute()
-      console.log(a)
+    pause () {
+      if (this.sequencer.isPlaying()) {
+        this.sequencer.stop()
+      }
+    },
+    eject () {
+      this.pause()
+      this.sequencer = null
     }
   },
-  mounted () {}
+  beforeCreate () {
+    document.title = 'Drum Machine'
+  }
 }
